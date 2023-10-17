@@ -7,10 +7,10 @@ import Typography from '@mui/material/Typography';
 import { useSettingsContext } from 'src/components/settings';
 import {Card, CardActionArea, CardActions, CardContent, CardMedia, Checkbox} from "@mui/material";
 import Button from "@mui/material/Button";
-
 // api
 import React, { useState, useEffect } from 'react';
 import {getAllEvents} from "../../api/event"
+import CreateButton from "./creat";
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ export default function TwoView() {
       >
         <div style={{padding: "20px", margin: "10px",display:"flex",justifyContent: "flex-end"}}>
           <Button variant="outlined">이벤트 복사</Button>
-          <Button variant="outlined">이벤트 추가</Button>
+          <CreateButton/>
           <Button variant="outlined">이벤트 삭제</Button>
         </div>
         <div>
@@ -58,7 +58,7 @@ export default function TwoView() {
           {eventsData.map((event) => (
             <Card key={event.id} sx={{ maxWidth: "345px", margin: "8px"}} >
               <CardActionArea>
-                <Checkbox color='primary' inputProps={{ 'aria-label': 'secondary checkbox' }} />
+                <Checkbox color='error' inputProps={{ 'aria-label': 'secondary checkbox' }} />
                 <CardMedia component="img" height="140" image={event.image} alt={event.name} />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
