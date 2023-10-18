@@ -17,8 +17,8 @@ import {createEvent} from "../../api/event";
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
-
-export default function FullScreenDialog() {
+/* eslint-disable react/prop-types */
+export default function FullScreenDialog({ setEventsData }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -108,9 +108,9 @@ export default function FullScreenDialog() {
 
             await createEvent(newEvent);
 
+            setEventsData((prevEvents) => [...prevEvents, newEvent]);
 
 
-            window.location.reload();
             // 폼 상태 초기화 및 다이얼로그 닫기
             setFormState({
                 name:'',
@@ -128,6 +128,8 @@ export default function FullScreenDialog() {
             setSelectedInstitution('');
 
             handleClose();
+
+            window.location.reload();
         } catch (error) {
             console.error(error);
         }

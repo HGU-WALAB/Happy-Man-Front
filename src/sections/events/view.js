@@ -19,6 +19,10 @@ export default function TwoView() {
 
   const [eventsData, setEventsData] = useState([]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const cardsPerPage = 12; // 한 페이지당 카드 개수
+    const [currentEventsData, setCurrentEventsData] = useState([]);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -30,7 +34,12 @@ export default function TwoView() {
       }
     }
     fetchData();
-  }, []);
+
+    setCurrentEventsData(eventsData.slice((currentPage - 1) * cardsPerPage,
+        currentPage * cardsPerPage));
+
+
+  }, [eventsData,currentPage]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -47,16 +56,16 @@ export default function TwoView() {
       >
         <div style={{padding: "20px", margin: "10px",display:"flex",justifyContent: "flex-end"}}>
           <Button variant="outlined">이벤트 복사</Button>
-          <CreateButton/>
+          <CreateButton setEventsData={setEventsData}/>
           <Button variant="outlined">이벤트 삭제</Button>
         </div>
         <div>
           <h3>검색 필터</h3>
         </div>
         <h3>이벤트 카드</h3>
-        <div style={{display:"flex"}}>
-          {eventsData.map((event) => (
-            <Card key={event.id} sx={{ width: "280px", margin: "8px"}} >
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-start", marginRight: '5%',marginLeft:'5%' }}>
+          {currentEventsData.map((event) => (
+            <Card key={event.id} sx={{ width: "300px", margin: "8px"}} >
               <CardActionArea>
                 <Checkbox color='error' inputProps={{ 'aria-label': 'secondary checkbox' }} />
                 <CardMedia component="img" height="140" image={event.image} alt={event.name} />
@@ -75,7 +84,7 @@ export default function TwoView() {
               </CardActionArea>
               <CardActions>
                 <Box display="flex" justifyContent="flex-end" width="100%" margin-right="1">
-                  <Button size="small" color="primary">
+                  <Button size="small" color="primary" disabled={new Date() > new Date(event.applicationDate)}>
                     신청하기
                   </Button>
                 </Box>
@@ -83,6 +92,14 @@ export default function TwoView() {
             </Card>
           ))}
         </div>
+
+          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+              {[...Array(Math.ceil(eventsData.length / cardsPerPage)).keys()].map((number) =>
+                  <Button key={number} onClick={() => setCurrentPage(number + 1)}>
+                      {number + 1}
+                  </Button>
+              )}
+          </div>
       </Box>
 
     </Container>
