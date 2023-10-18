@@ -56,7 +56,7 @@ export default function TwoView() {
         <h3>이벤트 카드</h3>
         <div style={{display:"flex"}}>
           {eventsData.map((event) => (
-            <Card key={event.id} sx={{ maxWidth: "345px", margin: "8px"}} >
+            <Card key={event.id} sx={{ width: "280px", margin: "8px"}} >
               <CardActionArea>
                 <Checkbox color='error' inputProps={{ 'aria-label': 'secondary checkbox' }} />
                 <CardMedia component="img" height="140" image={event.image} alt={event.name} />

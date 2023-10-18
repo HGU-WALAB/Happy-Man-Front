@@ -31,8 +31,8 @@ export default function FullScreenDialog() {
 
     const [formState, setFormState] = useState({
         name: '',
-        year: new Date().getFullYear(),
-        semester: 'spring',
+        year: new Date().getFullYear().toString(),
+        semester: 'SPRING',
         manager: '',
         image: '',
         applicationDate: '',
@@ -48,6 +48,16 @@ export default function FullScreenDialog() {
       [event.target.name]: event.target.value
     });
   };
+
+    const handleDateChange = (event) => {
+        const { name, value } = event.target;
+        const dateValue = new Date(value).toISOString().split('T')[0];
+
+        setFormState({
+            ...formState,
+            [name]: dateValue
+        });
+    };
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i);
@@ -79,22 +89,33 @@ export default function FullScreenDialog() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        // 선택한 기관과 일치하는 항목을 찾습니다.
+        const matchingInstitution = institutions.find((institution) => institution.name === selectedInstitution);
+
+        // 일치하는 항목이 없는 경우 에러 처리를 하고 함수를 종료합니다.
+        if (!matchingInstitution) {
+            console.error('No matching institution found');
+            return;
+        }
+
         try {
             const newEvent = {
                 ...formState,
-                institution:{
-                    id : institutions.find((institution) => institution.name === selectedInstitution).id,
-                    name : selectedInstitution,
-                },
+                institutionId: matchingInstitution.id
             };
+
+            console.log(newEvent);
 
             await createEvent(newEvent);
 
+
+
+            window.location.reload();
             // 폼 상태 초기화 및 다이얼로그 닫기
             setFormState({
                 name:'',
-                year:new Date().getFullYear(),
-                semester:'spring',
+                year:new Date().getFullYear().toString(),
+                semester:'SPRING',
                 manager:'',
                 image:'',
                 applicationDate:'',
@@ -111,6 +132,8 @@ export default function FullScreenDialog() {
             console.error(error);
         }
     };
+
+
 
     return (
     <div>
@@ -163,7 +186,7 @@ export default function FullScreenDialog() {
                       <FormControl sx={{ margin:'5px' }}>
                         <InputLabel sx={{ color: '#00A76F' }}>학기</InputLabel>
                         <Select name="semester" value={formState.semester} onChange={handleInputChange}>
-                          {['spring', 'summer', 'fall', 'winter'].map((semester) => (
+                          {['SPRING', 'SUMMER', 'FALL', 'WINTER'].map((semester) => (
                             <MenuItem key={semester} value={semester}>{semester}</MenuItem>
                           ))}
                         </Select>
@@ -201,7 +224,7 @@ export default function FullScreenDialog() {
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                            onChange= {handleInputChange}
+                            onChange= {handleDateChange}
                         />
                     </Grid>
                     <Grid item container>
@@ -211,7 +234,10 @@ export default function FullScreenDialog() {
                         name='startDate'
                         sx={{ flex: '1' }}
                         InputLabelProps={{shrink:true}}
-                        onChange= {handleInputChange}
+                        inputProps={{
+                            min: formState.applicationDate,
+                        }}
+                        onChange= {handleDateChange}
                       />
                       <TextField
                         label='이벤트 종료일'
@@ -222,7 +248,7 @@ export default function FullScreenDialog() {
                         inputProps={{
                           min: formState.startDate,
                         }}
-                        onChange= {handleInputChange}
+                        onChange= {handleDateChange}
                       />
                     </Grid>
                     <Grid item>
@@ -238,7 +264,7 @@ export default function FullScreenDialog() {
                         inputProps={{
                           min: formState.endDate,
                         }}
-                        onChange= {handleInputChange}
+                        onChange= {handleDateChange}
                       />
                     </Grid>
                     <Grid item>
