@@ -49,35 +49,18 @@ export function useNavData() {
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
-        subheader: 'overview v5.5.0',
+
         items: [
-          { title: 'one', path: paths.dashboard.root, icon: ICONS.dashboard },
-          { title: 'two', path: paths.dashboard.two, icon: ICONS.ecommerce },
+          { title: '홈', path: paths.dashboard.root, icon: ICONS.dashboard },
+          { title: '이벤트', path: paths.dashboard.two, icon: ICONS.ecommerce },
           {
-            title: 'three',
+            title: '기관',
             path: paths.dashboard.three,
             icon: ICONS.analytics,
           },
         ],
       },
 
-      // MANAGEMENT
-      // ----------------------------------------------------------------------
-      {
-        subheader: 'management',
-        items: [
-          {
-            title: 'user',
-            path: paths.dashboard.group.root,
-            icon: ICONS.user,
-            children: [
-              { title: 'four', path: paths.dashboard.group.root },
-              { title: 'five', path: paths.dashboard.group.five },
-              { title: 'six', path: paths.dashboard.group.six },
-            ],
-          },
-        ],
-      },
     ],
     []
   );

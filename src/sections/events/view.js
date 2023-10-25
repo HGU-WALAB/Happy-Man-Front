@@ -5,12 +5,15 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 // components
 import { useSettingsContext } from 'src/components/settings';
-import {Card, CardActionArea, CardActions, CardContent, CardMedia, Checkbox} from "@mui/material";
+import {Card, CardActionArea, CardActions, CardContent, CardMedia, Checkbox, Stack} from "@mui/material";
 import Button from "@mui/material/Button";
+import Badge from '@mui/material/Badge';
+
 // api
 import React, { useState, useEffect } from 'react';
 import {getAllEvents} from "../../api/event"
 import CreateButton from "./creat";
+import EventDetailModal from './detail-modal';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +26,7 @@ export default function TwoView() {
     const cardsPerPage = 12; // 한 페이지당 카드 개수
     const [currentEventsData, setCurrentEventsData] = useState([]);
 
+  // eventsData 업데이트
   useEffect(() => {
     async function fetchData() {
       try {
@@ -34,12 +38,26 @@ export default function TwoView() {
       }
     }
     fetchData();
+  }, []);
 
+// currentPage 업데이트
+  useEffect(() => {
     setCurrentEventsData(eventsData.slice((currentPage - 1) * cardsPerPage,
-        currentPage * cardsPerPage));
+      currentPage * cardsPerPage));
+  }, [eventsData, currentPage]);
 
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
-  }, [eventsData,currentPage]);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedEventId(null); // 선택된 이벤트 초기화
+  };
+  const handleCardClick = (id) => {
+    setSelectedEventId(id);
+    setModalOpen(true);
+  };
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -66,9 +84,22 @@ export default function TwoView() {
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-start", marginRight: '5%',marginLeft:'5%' }}>
           {currentEventsData.map((event) => (
             <Card key={event.id} sx={{ width: "300px", margin: "8px"}} >
-              <CardActionArea>
                 <Checkbox color='error' inputProps={{ 'aria-label': 'secondary checkbox' }} />
+              <CardActionArea onClick={() => handleCardClick(event.id)}>
+                <Stack position="relative">
                 <CardMedia component="img" height="140" image={event.image} alt={event.name} />
+                <Badge
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  color="success"
+                  badgeContent={new Date() <= new Date(event.applicationDate) ?
+                    <Typography variant="h6">신청 가능</Typography>
+                    : null}
+                  sx={{ zIndex: 1, position: 'absolute', top: 120, right: 50, width: '80px' }}
+                />
+              </Stack>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {event.name}
@@ -82,6 +113,11 @@ export default function TwoView() {
                   </Typography>
                 </CardContent>
               </CardActionArea>
+              <EventDetailModal
+                open={modalOpen}
+                onClose={handleCloseModal}
+                eventId={selectedEventId}
+              />
               <CardActions>
                 <Box display="flex" justifyContent="flex-end" width="100%" margin-right="1">
                   <Button size="small" color="primary" disabled={new Date() > new Date(event.applicationDate)}>

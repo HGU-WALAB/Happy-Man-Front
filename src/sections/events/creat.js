@@ -60,7 +60,7 @@ export default function FullScreenDialog({ setEventsData }) {
     };
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i);
+  const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i+1);
 
   const isFormComplete = () => Object.keys(formState).every((key) => formState[key]);
 
@@ -106,9 +106,8 @@ export default function FullScreenDialog({ setEventsData }) {
 
             console.log(newEvent);
 
-            await createEvent(newEvent);
-
-            setEventsData((prevEvents) => [...prevEvents, newEvent]);
+          const createdEvent = await createEvent(newEvent);
+          setEventsData((prevEvents) => [...prevEvents, createdEvent]);
 
 
             // 폼 상태 초기화 및 다이얼로그 닫기
@@ -129,7 +128,7 @@ export default function FullScreenDialog({ setEventsData }) {
 
             handleClose();
 
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.error(error);
         }

@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Three</title>
+        <title> 기관</title>
       </Helmet>
 
       <ThreeView />
