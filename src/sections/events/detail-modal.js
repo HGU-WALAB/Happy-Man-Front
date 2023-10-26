@@ -20,18 +20,26 @@ function EventDetailModal({ open, onClose, eventId }) {
 
   // eventId가 변경될 때마다 데이터를 가져옵니다.
   useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const event = await getSingleEvent(eventId); // API 호출 함수
-        setEventData(event);
-        console.log(event);
-      } catch (error) {
-        console.error(error);
+    // open이 true로 변경될 때만 API 요청을 시작합니다.
+    if (open) {
+      // eslint-disable-next-line no-inner-declarations
+      async function fetchEvent() {
+        try {
+          const event = await getSingleEvent(eventId); // API 호출 함수
+          setEventData(event);
+          console.log(event);
+        } catch (error) {
+          console.error(error);
+        }
       }
-    }
 
-    if (eventId) fetchEvent();
-  }, [eventId]);
+      if (eventId) fetchEvent();
+    } else {
+      // Dialog가 닫힐 때 eventData를 초기화합니다.
+      setEventData(null);
+    }
+  }, [eventId, open]);
+
 
   const handleClose = () => {
     setEventData(null); // Dialog를 닫을 때 데이터 초기화
@@ -52,7 +60,7 @@ function EventDetailModal({ open, onClose, eventId }) {
             }}
             >
       <DialogTitle sx={{display: 'flex', justifyContent: 'flex-end'}}>
-        <Button onClick={handleClose} color="primary" sx={{backgroundColor: 'black'}}>상세 페이지로 이동</Button>
+        <Button variant="outlined" onClick={handleClose} color="primary" >상세 페이지로 이동</Button>
       </DialogTitle>
       <DialogContent sx={{color: '#004B50',  minWidth: '450px'}}>
         <Box sx={{ position: 'relative' }}>
@@ -79,17 +87,12 @@ function EventDetailModal({ open, onClose, eventId }) {
           <Typography variant="h6">참여 기간</Typography>
           <Typography variant="body1">{new Date(eventData.info.startDate).toLocaleDateString()} ~ {new Date(eventData.info.endDate).toLocaleDateString()}</Typography>
         </Box>
-        <Box sx={{ marginBottom: '10px' }}>
+        <Box sx={{ marginBottom: '40px' }}>
           <Typography variant="h6">기타 세부사항</Typography>
           <Typography variant="body1">{eventData.info.content}</Typography>
         </Box>
 
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} autoFocus>
-          신청하기
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }
