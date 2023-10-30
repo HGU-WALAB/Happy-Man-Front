@@ -5,7 +5,7 @@ import { deleteEvent } from '../../api/event';
 
 const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
-const DeleteModal = ({ id  }) => {
+const DeleteModal = ({ id }) => {
   const [open, setOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
@@ -25,6 +25,8 @@ const DeleteModal = ({ id  }) => {
           console.error('이벤트 삭제 실패:', error);
         });
     }
+    alert('이벤트가 삭제되었습니다.');
+    window.location.reload();
   };
 
   return (

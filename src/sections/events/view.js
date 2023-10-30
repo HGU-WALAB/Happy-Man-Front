@@ -63,11 +63,15 @@ export default function TwoView() {
   const handleCreateEvent = async (newEvent) => {
     try {
       await createEvent(newEvent);
-      const result = await getAllEvents();
-      setEventsData(result.list);
+
+      // const result = await getAllEvents();
+      // setEventsData(result.list);
     } catch (error) {
       console.error(error);
     }
+
+    alert('이벤트가 생성되었습니다.');
+    window.location.reload();
   };
 
   return (
@@ -91,29 +95,29 @@ export default function TwoView() {
           <h3>검색 필터</h3>
         </div>
         <h3>이벤트 카드</h3>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-start", marginRight: '5%',marginLeft:'5%' }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", marginRight: '5%',marginLeft:'5%' }}>
           {currentEventsData.map((event) => (
             <Card key={event.id} sx={{ width: "300px", margin: "8px" }} >
               <Settingbt id={event.id}/>
               <CardActionArea onClick={() => handleCardClick(event.id)}>
-                <Stack position="relative">
                   <CardMedia component="img" height="140" image={event.image} alt={event.name} />
-                  <Badge
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    color="success"
-                    badgeContent={new Date() <= new Date(event.applicationDate) ?
-                      <Typography variant="h6">신청 가능</Typography>
-                      : null}
-                    sx={{ zIndex: 1, position: 'absolute', top: 120, right: 50, width: '80px' }}
-                  />
-                </Stack>
                 <CardContent>
+                  <Stack direction="row" alignItems="center" >
+                    <Typography gutterBottom variant="body2" color="primary" component="div">
+                      {event.year} - {event.semester}
+                    </Typography>
+                    <Badge
+                      color="success"
+                      badgeContent={new Date() <= new Date(event.applicationDate) ?
+                        <Typography variant="body2">신청 가능</Typography>
+                        : null}
+                      sx={{ zIndex: 1, position: 'absolute',top: '58.5%', right:'45%',width:'80px' }}
+                    />
+                  </Stack>
                   <Typography gutterBottom variant="h5" component="div">
                     {event.name}
                   </Typography>
+
                   <Typography variant="body2" color="text.secondary">
                     담당자 : {event.manager} {event.institution && event.institution.info ? `(${event.institution.info.name})` : ''}
                   </Typography>

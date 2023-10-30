@@ -47,7 +47,7 @@ function PositionedMenu({ id }) { // 수정: id prop 추가
         }}
       >
         <MenuItem onClick={handleClose}>수정하기</MenuItem>
-        <DeleteModal id={id}/> {/* 수정: id prop 추가 */}
+        <DeleteModal id={id} />
       </Menu>
     </Box>
   );
