@@ -63,9 +63,6 @@ export default function TwoView() {
   const handleCreateEvent = async (newEvent) => {
     try {
       await createEvent(newEvent);
-
-      // const result = await getAllEvents();
-      // setEventsData(result.list);
     } catch (error) {
       console.error(error);
     }
