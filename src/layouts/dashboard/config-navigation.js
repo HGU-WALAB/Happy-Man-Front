@@ -51,13 +51,13 @@ export function useNavData() {
       {
 
         items: [
-          { title: '홈', path: paths.dashboard.root, icon: ICONS.dashboard },
-          { title: '이벤트', path: paths.dashboard.event, icon: ICONS.ecommerce },
-          {
-            title: '기관',
-            path: paths.dashboard.three,
-            icon: ICONS.analytics,
-          },
+          { title: '상세페이지', path: paths.dashboard.root, icon: ICONS.dashboard },
+          // { title: '이벤트', path: paths.dashboard.event, icon: ICONS.ecommerce },
+          // {
+          //   title: '기관',
+          //   path: paths.dashboard.three,
+          //   icon: ICONS.analytics,
+          // },
           { title: '이벤트 관리자', path: paths.dashboard.manager, icon: ICONS.ecommerce },
         ],
       },

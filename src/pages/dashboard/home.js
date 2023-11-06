@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title>홈</title>
+        <title>상세 페이지</title>
       </Helmet>
 
       <OneView />
