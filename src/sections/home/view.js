@@ -3,7 +3,7 @@ import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import {Button, Checkbox, ListItem, Stack} from "@mui/material";
+import {Button, Checkbox, IconButton, ListItem, Stack} from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -22,6 +22,9 @@ import { getSingleEvent } from '../../api/event';
 import { fetchCertificate } from '../../api/certificate';
 
 
+function ToggleOnIcon() {
+  return null;
+}
 
 export default function OneView() {
     const [eventData, setEventData] = useState(null);
@@ -48,6 +51,9 @@ export default function OneView() {
         console.log("성공");
     };
 
+  const handleToggle = () => {
+    console.log('Toggle button clicked!');
+  };
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -65,10 +71,12 @@ export default function OneView() {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                bgcolor: '#004B50',
+                bgcolor: '#007867',
                 minHeight: '300px',
-                borderRadius: '10px 10px 0 0', // 상단 모서리 둥글게
+                borderRadius: '10px 10px 0 0',
+                position: 'relative',
               }}>
+
                 <Stack direction='row' margin='10px'>
                   <Box sx={{width: '50%', height: 'auto',  display: 'flex', justifyContent: 'end', alignItems: 'center'}}>
                     <img src={eventData?.image} alt={eventData?.id} style={{maxWidth: '80%', height: 'auto', borderRadius: '10px'}} />
@@ -102,7 +110,7 @@ export default function OneView() {
                     <Table>
                       <TableHead>
                         <TableRow>
-                          <TableCell align="center" style={{backgroundColor: '#004B50', color: 'white'}}>
+                          <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>
                             <Typography variant="h4">관리 및 문의</Typography>
                           </TableCell>
                         </TableRow>
@@ -122,12 +130,31 @@ export default function OneView() {
               </Box>
 
               <Box sx={{margin: '40px 60px'}}>
+                <Typography variant="h3">
+                  <BeenhereIcon sx={{marginRight: '4px'}}/>
+                  수료증 정보
+                </Typography>
+                <List>
+                  <ListItem>
+                    <ListItemText
+                      primary={<Typography variant="h4" marginBottom="20px">1. 내용</Typography>}
+                      secondary={<Typography variant="body1">위 학생은 전산전자공학부에서 진행한 &quot;자바 프로그래밍 캠프&quot;에 참가하여 소정의 과정을 이수하였기에 이 증서를 수여합니다.</Typography>} />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText
+                      primary={<Typography variant="h4" marginBottom="20px">2. 학부장</Typography>}
+                      secondary={<Typography variant="body1"> 한동대학교 전산전자공학부 황성수</Typography>} />
+                  </ListItem>
+                </List>
+              </Box>
+
+              <Box sx={{margin: '40px 60px'}}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box>
                     <Typography variant="h3" display="inline">
                       <SchoolIcon sx={{marginRight:'5px'}}/>수료자 명단
                     </Typography>
-                    <Typography variant="h6" display="inline">({eventData?.certificateIssueDate})</Typography>
+                    <Typography variant="h6" display="inline">(수료증 발급일 : {eventData?.certificateIssueDate})</Typography>
                   </Box>
                   <Box>
                     <Button variant="outlined" color="primary" sx={{marginRight: '5px'}}> 수료생 등록</Button>
@@ -138,14 +165,14 @@ export default function OneView() {
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                       <TableRow >
-                        <TableCell padding="checkbox" style={{backgroundColor: '#004B50', color: 'white'}}>
+                        <TableCell padding="checkbox" style={{backgroundColor: '#007867', color: 'white'}}>
                           <Checkbox />
                         </TableCell>
-                        <TableCell align="center" style={{backgroundColor: '#004B50', color: 'white'}}>이름</TableCell>
-                        <TableCell align="center" style={{backgroundColor: '#004B50', color: 'white'}}>학번</TableCell>
-                        <TableCell align="center" style={{backgroundColor: '#004B50', color: 'white'}}>학부</TableCell>
-                        <TableCell align="center" style={{backgroundColor: '#004B50', color: 'white'}}>수료증 호수</TableCell>
-                        <TableCell align="center" style={{backgroundColor: '#004B50', color: 'white'}}>수료증</TableCell>
+                        <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>이름</TableCell>
+                        <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>학번</TableCell>
+                        <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>학부</TableCell>
+                        <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>수료증 호수</TableCell>
+                        <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>수료증</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -161,7 +188,7 @@ export default function OneView() {
                           <TableCell align="center">{participant.user.info.department}</TableCell>
                           <TableCell align="center">제 2023-1호</TableCell>
                           <TableCell align="center">
-                            <Button onClick={() => handleButtonClick(participant.id)}>인증서 가져오기 <DownloadForOfflineOutlinedIcon/></Button>
+                            <Button onClick={() => handleButtonClick(participant.id)}>수료증 미리보기 <DownloadForOfflineOutlinedIcon/></Button>
                           </TableCell>
                         </TableRow>
                       ))}

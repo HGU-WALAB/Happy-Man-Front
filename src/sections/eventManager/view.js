@@ -5,7 +5,6 @@ import {
   Container,
   Typography,
   TextField,
-  Button,
   MenuItem,
   Table,
   TableBody,
@@ -18,12 +17,13 @@ import {
   IconButton,
   TablePagination,
   Stack,
-  Divider
+  Divider, Chip
 } from '@mui/material';
 
 import {
   ContentCopy as ContentCopyIcon,
   Edit as EditIcon,
+  ManageAccounts as ManageAccountsIcon,
 } from '@mui/icons-material';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -32,6 +32,8 @@ import CustomPopover, {usePopover} from "../../components/custom-popover";
 import CreateForm from "./createForm";
 import EventDeleteModal from './delete-modal';
 import {getAllEvents} from "../../api/event";
+
+
 
 
 
@@ -99,10 +101,13 @@ export default function EventManagerView() {
   return (
     <>
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <Typography variant="h4"> 이벤트 관리자 페이지 </Typography>
+      <Typography variant="h3">
+        <ManageAccountsIcon sx={{ fontSize: 30, verticalAlign: 'middle' }}/>
+        이벤트 관리자 페이지
+      </Typography>
 
       <Box sx={{ mt: 5 }}>
-        <Stack direction="row" justifyContent="space-between" sx={{margin: 'auto', maxWidth:1300}}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{margin: '10px 0px ', maxWidth:1300}}>
           <TextField
             type="text"
             placeholder="Search by name"
@@ -116,17 +121,25 @@ export default function EventManagerView() {
               ),
             }}
           />
-          <CreateForm setEventsData={setEventsData} eventData={selectedUserData} />
+          <Stack direction="row">
+            <CreateForm setEventsData={setEventsData} eventData={selectedUserData} />
+          </Stack>
         </Stack>
 
         <TableContainer component={Paper} sx={{ maxHeight: 750 , minWidth: 300, maxWidth: 1300, margin: 'auto'}}>
-          <Table
-            stickyHeader aria-label="sticky table"
-          >
+          <Table>
             <TableHead>
               <TableRow>
-                {['년도', '학기', '캠프명', '진행', '관리', '수료자 등록', ''].map((header) => (
-                  <TableCell align="center" key={header}>{header}</TableCell>
+                {['년도', '학기', '캠프명', '진행', '관리', '공개/미공개', ''].map((header) => (
+                  <TableCell
+                    align="center"
+                    key={header}
+                    sx={{
+                      color: 'white',
+                      backgroundColor: '#007867',
+                    }}
+                  >
+                    {header}</TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -138,7 +151,13 @@ export default function EventManagerView() {
                     <TableCell component="th" scope="row" align="center">{user.name}</TableCell>
                     <TableCell align="center">{user.manager}</TableCell>
                     <TableCell align="center">{user.institution.info.name}</TableCell>
-                    <TableCell align="center">{user.status}</TableCell>
+                    <TableCell align="center">
+                      {user.state ? (
+                        <Chip label="공개" color="success" />
+                      ) : (
+                        <Chip label="미공개" color="error" />
+                      )}
+                    </TableCell>
                     <TableCell align="center">
                       <IconButton onClick={(event) => { setSelectedUserKey(user.id); popover.onOpen(event); }}>
                         <Iconify icon="eva:more-vertical-fill" />
