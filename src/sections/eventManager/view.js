@@ -149,10 +149,10 @@ export default function EventManagerView() {
                     <TableCell align="center">{user.year}</TableCell>
                     <TableCell align="center">{user.semester}</TableCell>
                     <TableCell component="th" scope="row" align="center">{user.name}</TableCell>
-                    <TableCell align="center">{user.manager}</TableCell>
+                    <TableCell align="center">{user.professor}</TableCell>
                     <TableCell align="center">{user.institution.info.name}</TableCell>
                     <TableCell align="center">
-                      {user.state ? (
+                      {user.isOpen ? (
                         <Chip label="공개" color="success" />
                       ) : (
                         <Chip label="미공개" color="error" />

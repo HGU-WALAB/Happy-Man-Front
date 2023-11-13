@@ -87,7 +87,7 @@ export default function OneView() {
                       <Typography variant="h6" color="white"> {eventData?.year} - {eventData?.semester} </Typography>
                       <Typography variant="h2" color="white"> {eventData?.name} </Typography>
                     </Stack>
-                    <Typography variant="h5" sx={{marginBottom:'10px'}} color="white"> 진행:  {eventData?.manager} </Typography>
+                    <Typography variant="h5" sx={{marginBottom:'10px'}} color="white"> 진행:  {eventData?.professor} </Typography>
                   </Box>
                 </Stack>
               </Box>

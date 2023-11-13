@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
@@ -11,97 +11,35 @@ import {TextField, Select, MenuItem, FormControl, InputLabel, Grid} from '@mui/m
 import Box from "@mui/material/Box";
 
 import { getAllInstitutions } from '../../api/institution';
-import {createEvent, getAllEvents, updateEvent} from "../../api/event";
+import { createEvent } from "../../api/event";
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
-/* eslint-disable react/prop-types */
-export default function FullScreenDialog({ setEventsData, eventData }) {
+export default function FullScreenDialog() {
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = (isUpdate = false) => {
-    if (isUpdate && eventData && eventData.institution && eventData.institution.info) {
-      setFormState({
-        name: eventData.name,
-        year: eventData.year,
-        semester: eventData.semester,
-        manager: eventData.manager,
-        image: eventData.image,
-        applicationDate: eventData.applicationDate,
-        startDate: eventData.startDate,
-        endDate: eventData.endDate,
-        certificateIssueDate: eventData.certificateIssueDate,
-        content: eventData.content
-      });
-      setSelectedInstitution(eventData.institution.info.name);
-    } else {
-      setFormState({
-        name: '',
-        year: new Date().getFullYear().toString(),
-        semester: 'SPRING',
-        manager: '',
-        image: '',
-        applicationDate: '',
-        startDate: '',
-        endDate: '',
-        certificateIssueDate: '',
-        content: ''
-      });
-      setSelectedInstitution('');
-    }
-    setOpen(true);
+  const [formState, setFormState] = useState({
+    name: '',
+    year: new Date().getFullYear().toString(),
+    semester: 'SPRING',
+    professor: '',
+    image: '',
+    applicationDate: '',
+    startDate: '',
+    endDate: '',
+    certificateIssueDate: '',
+    content: ''
+  });
+
+  const [selectedInstitution, setSelectedInstitution] = useState('');
+
+  const handleClickOpen = () => {
+    if (!open) setOpen(true);
   };
-
-  useEffect(() => {
-    if (eventData && eventData.institution && eventData.institution.info) {
-      setFormState({
-        name: eventData.name,
-        year: eventData.year,
-        semester: eventData.semester,
-        manager: eventData.manager,
-        image: eventData.image,
-        applicationDate: eventData.applicationDate,
-        startDate: eventData.startDate,
-        endDate: eventData.endDate,
-        certificateIssueDate: eventData.certificateIssueDate,
-        content: eventData.content
-      });
-      setSelectedInstitution(eventData.institution.info.name);
-    } else {
-      setFormState({
-        name: '',
-        year: new Date().getFullYear().toString(),
-        semester: 'SPRING',
-        manager: '',
-        image: '',
-        applicationDate: '',
-        startDate: '',
-        endDate: '',
-        certificateIssueDate: '',
-        content: ''
-      });
-      setSelectedInstitution('');
-    }
-  }, [eventData]);
-
-
 
   const handleClose = () => {
     setOpen(false);
   };
-
-  const [formState, setFormState] = useState({
-    name: eventData ? eventData.name : '',
-    year: eventData ? eventData.year : new Date().getFullYear().toString(),
-    semester: eventData ? eventData.semester : 'SPRING',
-    manager: eventData ? eventData.manager : '',
-    image: eventData ? eventData.image : '',
-    applicationDate: eventData ? eventData.applicationDate : '',
-    startDate: eventData ? eventData.startDate : '',
-    endDate: eventData ? eventData.endDate : '',
-    certificateIssueDate: eventData ? eventData.certificateIssueDate : '',
-    content: eventData ? eventData.content : ''
-  });
 
   const handleInputChange = (event) => {
     setFormState({
@@ -123,13 +61,12 @@ export default function FullScreenDialog({ setEventsData, eventData }) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i+1);
 
-    const isFormComplete = () => {
-        const requiredFields = ['name', 'manager', 'startDate', 'endDate'];
-        return requiredFields.every((field) => formState[field] && (field !== 'selectedInstitution' || selectedInstitution));
-    };
+  const isFormComplete = () => {
+    const requiredFields = ['name', 'manager', 'startDate', 'endDate'];
+    return requiredFields.every((field) => formState[field] && (field !== 'selectedInstitution' || selectedInstitution));
+  };
 
   const [institutions, setInstitutions] = useState([]);
-  const [selectedInstitution, setSelectedInstitution] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -145,7 +82,6 @@ export default function FullScreenDialog({ setEventsData, eventData }) {
     fetchData();
   }, []);
 
-
   const handleSelectChange = (event) => {
     setSelectedInstitution(event.target.value);
   };
@@ -153,10 +89,8 @@ export default function FullScreenDialog({ setEventsData, eventData }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // 선택한 기관과 일치하는 항목을 찾습니다.
     const matchingInstitution = institutions.find((institution) => institution.name === selectedInstitution);
 
-    // 일치하는 항목이 없는 경우 에러 처리를 하고 함수를 종료합니다.
     if (!matchingInstitution) {
       console.error('No matching institution found');
       return;
@@ -168,36 +102,22 @@ export default function FullScreenDialog({ setEventsData, eventData }) {
         institutionId: matchingInstitution.id
       };
 
-      console.log(newEvent);
+      await createEvent(newEvent);
 
-      let createdEvent;
-      if (eventData) { // 수정하는 경우
-        createdEvent = await updateEvent(newEvent);
-      } else { // 추가하는 경우
-        createdEvent = await createEvent(newEvent);
-      }
-
-      // 이벤트 리스트를 다시 불러옵니다.
-      // 이 부분은 실제 데이터를 받아오는 API 호출로 바꿔야 합니다.
-      const updatedEvents = await getAllEvents();
-      setEventsData(updatedEvents);
-
-      // 폼 상태 초기화 및 다이얼로그 닫기
       setFormState({
-        name:'',
-        year:new Date().getFullYear().toString(),
-        semester:'SPRING',
-        manager:'',
-        image:'',
-        applicationDate:'',
-        startDate:'',
-        endDate:'',
-        certificateIssueDate:'',
-        content:''
+        name: '',
+        year: new Date().getFullYear().toString(),
+        semester: 'SPRING',
+        professor: '',
+        image: '',
+        applicationDate: '',
+        startDate: '',
+        endDate: '',
+        certificateIssueDate: '',
+        content: ''
       });
 
       setSelectedInstitution('');
-
       handleClose();
 
     } catch (error) {
@@ -237,7 +157,7 @@ export default function FullScreenDialog({ setEventsData, eventData }) {
         <Box sx={{ mt: '50px',mx: 'auto', display: 'flex', flexDirection: ['column', 'row'], justifyContent: 'center',width: ['95%', '80%', '60%'] }}>
           <Box sx={{ flex: 1, mr: [0, '16px'], mb: ['16px', 0] }}>
             <Box sx={{ borderBottom: '2px solid #00A76F', width:'80%' }}>
-              <Typography variant="h4">필수 정보</Typography>
+              <Typography variant="h4">기본 정보</Typography>
             </Box>
           </Box>
           <Box sx={{ flex: 3, backgroundColor:'white', borderRadius: '16px', border: '5px solid #00A76F'}}>
@@ -279,7 +199,7 @@ export default function FullScreenDialog({ setEventsData, eventData }) {
                     </FormControl>
 
 
-                    <TextField sx={{ flex: 1 }} label="담당자" name="manager" onChange={handleInputChange} />
+                    <TextField sx={{ flex: 1 }} label="담당자" name="professor" onChange={handleInputChange} />
                   </Grid>
 
 
