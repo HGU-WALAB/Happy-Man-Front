@@ -22,13 +22,13 @@ const DeleteModal = ({ id }) => {
                 .then((response) => {
                     console.log('이벤트 삭제 성공:', response);
                     handleClose();
+                    window.location.reload();
 
                 })
                 .catch((error) => {
                     console.error('이벤트 삭제 실패:', error);
                 });
         }
-        alert('이벤트가 삭제되었습니다.');
     };
 
     return (
