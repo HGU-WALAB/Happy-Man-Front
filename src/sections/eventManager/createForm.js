@@ -28,7 +28,10 @@ export default function FullScreenDialog() {
     startDate: '',
     endDate: '',
     certificateIssueDate: '',
-    content: ''
+    content: '',
+    stamp: '',
+    issuingName: '',
+    isOpen: false,
   });
 
   const [selectedInstitution, setSelectedInstitution] = useState('');
@@ -42,19 +45,12 @@ export default function FullScreenDialog() {
   };
 
   const handleInputChange = (event) => {
-    setFormState({
-      ...formState,
-      [event.target.name]: event.target.value
-    });
-  };
-
-  const handleDateChange = (event) => {
     const { name, value } = event.target;
-    const dateValue = new Date(value).toISOString().split('T')[0];
+    const finalValue = event.target.type === 'date' ? new Date(value).toISOString().split('T')[0] : value;
 
     setFormState({
       ...formState,
-      [name]: dateValue
+      [name]: finalValue
     });
   };
 
@@ -62,8 +58,8 @@ export default function FullScreenDialog() {
   const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i+1);
 
   const isFormComplete = () => {
-    const requiredFields = ['name', 'manager', 'startDate', 'endDate'];
-    return requiredFields.every((field) => formState[field] && (field !== 'selectedInstitution' || selectedInstitution));
+    const requiredFields = ['name', 'professor', 'startDate', 'endDate'];
+    return requiredFields.every((field) => formState[field]);
   };
 
   const [institutions, setInstitutions] = useState([]);
@@ -105,20 +101,24 @@ export default function FullScreenDialog() {
       await createEvent(newEvent);
 
       setFormState({
-        name: '',
-        year: new Date().getFullYear().toString(),
-        semester: 'SPRING',
-        professor: '',
-        image: '',
-        applicationDate: '',
-        startDate: '',
-        endDate: '',
-        certificateIssueDate: '',
-        content: ''
+          name: '',
+          year: new Date().getFullYear().toString(),
+          semester: 'SPRING',
+          professor: '',
+          image: '',
+          applicationDate: '',
+          startDate: '',
+          endDate: '',
+          certificateIssueDate: '',
+          content: '',
+          stamp: '',
+          issuingName: '',
+          isOpen: false,
       });
 
       setSelectedInstitution('');
       handleClose();
+      window.location.reload();
 
     } catch (error) {
       console.error(error);
@@ -199,12 +199,12 @@ export default function FullScreenDialog() {
                     </FormControl>
 
 
-                    <TextField sx={{ flex: 1 }} label="담당자" name="professor" onChange={handleInputChange} />
+                    <TextField sx={{ flex: 1 }} label="교수님" name="professor" onChange={handleInputChange} />
                   </Grid>
 
 
                   <Grid item>
-                    <TextField sx={{ width: '100%' }} label="이미지 주소" name="image" onChange={handleInputChange} />
+                    <TextField sx={{ width: '100%' }} label="캠프대표 이미지" name="image" onChange={handleInputChange} />
                   </Grid>
                   <Grid item container>
                     <TextField
@@ -216,7 +216,7 @@ export default function FullScreenDialog() {
                       inputProps={{
                         min: formState.applicationDate,
                       }}
-                      onChange= {handleDateChange}
+                      onChange= {handleInputChange}
                     />
                     <TextField
                       label='이벤트 종료일'
@@ -227,23 +227,7 @@ export default function FullScreenDialog() {
                       inputProps={{
                         min: formState.startDate,
                       }}
-                      onChange= {handleDateChange}
-                    />
-                  </Grid>
-                  <Grid item>
-
-                    <TextField
-                      label="수료증 발급일"
-                      type="date"
-                      name="certificateIssueDate"
-                      sx={{ width: '100%' }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      inputProps={{
-                        min: formState.endDate,
-                      }}
-                      onChange= {handleDateChange}
+                      onChange= {handleInputChange}
                     />
                   </Grid>
                   <Grid item>
@@ -258,6 +242,37 @@ export default function FullScreenDialog() {
                       onChange={handleInputChange}
                     />
                   </Grid>
+                    <Grid item>
+                        <TextField
+                            label="수료증 발급일"
+                            type="date"
+                            name="certificateIssueDate"
+                            sx={{ width: '100%' }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            inputProps={{
+                                min: formState.endDate,
+                            }}
+                            onChange= {handleInputChange}
+                        />
+                    </Grid>
+                  <Grid item>
+                    <TextField
+                      label="직인 이미지"
+                      name="stamp"
+                      sx={{ width: '100%' }}
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <TextField
+                      label="발급자명"
+                      name="issuingName"
+                      sx={{ width: '100%' }}
+                      onChange={handleInputChange}
+                    />
+                  </Grid>
 
                   <Grid item container justifyContent="flex-end">
                     <Button type="submit" variant="contained" color="primary" disabled={!isFormComplete()}>
@@ -269,8 +284,6 @@ export default function FullScreenDialog() {
             </form>
           </Box>
         </Box>
-
-
       </Dialog>
     </div>
   );

@@ -35,7 +35,7 @@ export default function OneView() {
     useEffect(() => {
         const fetchEventData = async () => {
             try {
-                const data = await getSingleEvent('2');  // Replace 'id' with actual event id
+                const data = await getSingleEvent('1');  // Replace 'id' with actual event id
                 setEventData(data.info);
                 console.log(data.info);
             } catch (error) {
