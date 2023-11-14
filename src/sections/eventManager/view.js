@@ -22,7 +22,6 @@ import {
 
 import {
   ContentCopy as ContentCopyIcon,
-  Edit as EditIcon,
   ManageAccounts as ManageAccountsIcon,
 } from '@mui/icons-material';
 
@@ -31,6 +30,7 @@ import Iconify from "../../components/iconify";
 import CustomPopover, {usePopover} from "../../components/custom-popover";
 import CreateForm from "./createForm";
 import EventDeleteModal from './delete-modal';
+import UpdateForm from "./update";
 import {getAllEvents} from "../../api/event";
 
 
@@ -202,16 +202,7 @@ export default function EventManagerView() {
 
     <Divider sx={{ borderStyle: 'dashed' }} />
 
-    <MenuItem
-        onClick={() => {
-          const userData = users.find(user => user.id === selectedUserKey); // 선택된 사용자의 데이터를 찾음
-          setSelectedUserData(userData); // 선택된 사용자 데이터 상태 업데이트
-          popover.onClose();
-        }}
-    >
-      <EditIcon/>
-      수정하기
-    </MenuItem>
+      <UpdateForm eventId={selectedUserKey} />
 
     <Divider sx={{ borderStyle: 'dashed' }} />
 
