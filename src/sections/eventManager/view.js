@@ -110,7 +110,7 @@ export default function EventManagerView() {
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{margin: '10px 0px ', maxWidth:1300}}>
           <TextField
             type="text"
-            placeholder="Search by name"
+            placeholder="캠프명으로 검색"
             value={searchTerm}
             onChange={handleSearchChange}
             InputProps={{

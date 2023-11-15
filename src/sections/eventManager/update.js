@@ -40,35 +40,39 @@ export default function FullScreenDialog({eventId}) {
 
     const [selectedInstitution, setSelectedInstitution] = useState('');
     // 이벤트 데이터를 불러오는 함수
-    // 이벤트 데이터를 불러오는 함수
+
+
     const fetchEventData = async () => {
-        if (!eventId) {
-            console.error("Invalid eventId:", eventId);
-            return;
-        }
-        try {
-            const eventData = await getSingleEvent(eventId);
-            // 받아온 데이터를 formState에 적용
-            setFormState({
-                name: eventData.name,
-                year: eventData.year,
-                semester: eventData.semester,
-                professor: eventData.professor,
-                image: eventData.image,
-                applicationDate: eventData.applicationDate,
-                startDate: eventData.startDate,
-                endDate: eventData.endDate,
-                certificateIssueDate: eventData.certificateIssueDate,
-                content: eventData.content,
-                stamp: eventData.stamp,
-                issuingName: eventData.issuingName,
-                isOpen: eventData.isOpen,
-            });
-            setSelectedInstitution(eventData.institutionId); // 기관 ID는 별도로 관리
-        } catch (error) {
-            console.error(error);
-        }
+      if (!eventId) {
+        console.error("Invalid eventId:", eventId);
+        return;
+      }
+      try {
+        const { info } = await getSingleEvent(eventId);
+        console.log(info);
+        // 받아온 데이터를 formState에 적용
+        setFormState({
+          name: info.name,
+          year: info.year || '',
+          semester: info.semester|| '',
+          professor: info.professor,
+          image: info.image,
+          applicationDate: info.applicationDate,
+          startDate: info.startDate,
+          endDate: info.endDate,
+          certificateIssueDate: info.certificateIssueDate,
+          content: info.content,
+          stamp: info.stamp,
+          issuingName: info.issuingName,
+          isOpen: info.isOpen,
+        });
+        // setSelectedInstitution(info.institutionId); // 기관 ID는 별도로 관리
+      } catch (error) {
+        console.error(error);
+      }
     };
+
+
 
 
     const handleClickOpen = async () => {
@@ -85,6 +89,8 @@ export default function FullScreenDialog({eventId}) {
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         const finalValue = event.target.type === 'date' ? new Date(value).toISOString().split('T')[0] : value;
+
+
 
         setFormState({
             ...formState,
@@ -223,7 +229,7 @@ export default function FullScreenDialog({eventId}) {
                                         </FormControl>
                                     </Grid>
                                     <Grid item>
-                                        <TextField sx={{ width: '100%' }} label="이벤트 이름" name="name" onChange={handleInputChange} />
+                                        <TextField sx={{ width: '100%' }} label="이벤트 이름" value={formState.name} name="name" onChange={handleInputChange} />
                                     </Grid>
                                     <Grid item container>
                                         <FormControl sx={{ flex: 1, marginRight:'5px'}}>
@@ -238,17 +244,18 @@ export default function FullScreenDialog({eventId}) {
                                         </FormControl>
 
 
-                                        <TextField sx={{ flex: 1 }} label="교수님" name="professor" onChange={handleInputChange} />
+                                        <TextField sx={{ flex: 1 }} label="교수님" value={formState.professor} name="professor" onChange={handleInputChange} />
                                     </Grid>
 
 
                                     <Grid item>
-                                        <TextField sx={{ width: '100%' }} label="캠프대표 이미지" name="image" onChange={handleInputChange} />
+                                        <TextField sx={{ width: '100%' }} label="캠프대표 이미지" value={formState.image} name="image" onChange={handleInputChange} />
                                     </Grid>
                                     <Grid item container>
                                         <TextField
                                             label='이벤트 시작일'
                                             type='date'
+                                            value={formState.startDate}
                                             name='startDate'
                                             sx={{ flex: '1' }}
                                             InputLabelProps={{shrink:true}}
@@ -260,6 +267,7 @@ export default function FullScreenDialog({eventId}) {
                                         <TextField
                                             label='이벤트 종료일'
                                             type='date'
+                                            value={formState.endDate}
                                             name='endDate'
                                             sx={{ flex: '1' }}
                                             InputLabelProps={{shrink:true}}
@@ -270,20 +278,21 @@ export default function FullScreenDialog({eventId}) {
                                         />
                                     </Grid>
                                     <Grid item>
-                                        <TextField
-                                            label="세부사항"
-                                            name="content"
-                                            multiline
-                                            rows={4}
-                                            sx={{ width: '100%' }}
-                                            defaultValue=""
-                                            variant="outlined"
-                                            onChange={handleInputChange}
-                                        />
+                                      <TextField
+                                        label="세부사항"
+                                        value={formState.content}
+                                        name="content"
+                                        multiline
+                                        rows={4}
+                                        sx={{ width: '100%' }}
+                                        variant="outlined"
+                                        onChange={handleInputChange}
+                                      />
                                     </Grid>
                                     <Grid item>
                                         <TextField
                                             label="수료증 발급일"
+                                            value={formState.certificateIssueDate}
                                             type="date"
                                             name="certificateIssueDate"
                                             sx={{ width: '100%' }}
@@ -299,6 +308,7 @@ export default function FullScreenDialog({eventId}) {
                                     <Grid item>
                                         <TextField
                                             label="직인 이미지"
+                                            value={formState.stamp}
                                             name="stamp"
                                             sx={{ width: '100%' }}
                                             onChange={handleInputChange}
@@ -307,6 +317,7 @@ export default function FullScreenDialog({eventId}) {
                                     <Grid item>
                                         <TextField
                                             label="발급자명"
+                                            value={formState.issuingName}
                                             name="issuingName"
                                             sx={{ width: '100%' }}
                                             onChange={handleInputChange}
