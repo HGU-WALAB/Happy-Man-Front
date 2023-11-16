@@ -1,35 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import {Button, Checkbox, IconButton, ListItem, Stack} from "@mui/material";
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import List from "@mui/material/List";
-import ListItemText from "@mui/material/ListItemText";
+import {
+    Box,
+    Container,
+    Typography,
+    Stack,
+    Switch,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    List,
+    ListItem,
+    ListItemText,
+    Checkbox,
+    Button
+} from "@mui/material";
 import SchoolIcon from '@mui/icons-material/School';
 import BeenhereIcon from '@mui/icons-material/Beenhere';
 import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
 import SimCardDownloadIcon from '@mui/icons-material/SimCardDownload';
 import { useSettingsContext } from 'src/components/settings';
-import { getSingleEvent } from '../../api/event';
+import { getSingleEvent,updateIsOpen } from '../../api/event';
 import { fetchCertificate } from '../../api/certificate';
-
-
-function ToggleOnIcon() {
-  return null;
-}
+import {downloadExcel} from "../../api/excel";
 
 export default function OneView() {
     const [eventData, setEventData] = useState(null);
     const settings = useSettingsContext();
-    const [certificateUrl, setCertificateUrl] = useState(null);
+    const [isOpen, setIsOpen] = useState(null);
+    const [checkedList, setCheckedList] = useState([]);
+    const [isAllChecked, setIsAllChecked] = useState(false);
 
 
     useEffect(() => {
@@ -37,7 +41,8 @@ export default function OneView() {
             try {
                 const data = await getSingleEvent('1');  // Replace 'id' with actual event id
                 setEventData(data.info);
-                console.log(data.info);
+                setIsOpen(data.info.isOpen);
+                setCheckedList(new Array(data.info.participantList.list.length).fill(false));
             } catch (error) {
                 console.error('Failed to fetch event data:', error);
             }
@@ -47,13 +52,32 @@ export default function OneView() {
 
     const handleButtonClick = async (participantId) => {
         const url = await fetchCertificate(participantId);
-        setCertificateUrl(url);
-        console.log("성공");
+        window.open(url, '_blank');
     };
 
-  const handleToggle = () => {
-    console.log('Toggle button clicked!');
-  };
+    const handleToggle = async () => {
+        const newIsOpen = !isOpen;
+        setIsOpen(newIsOpen);
+        await updateIsOpen(eventData.id, { isOpen: newIsOpen });
+    };
+
+    const handleCheckAllChange = (event) => {
+        setIsAllChecked(event.target.checked);
+        setCheckedList(new Array(eventData.participantList.list.length).fill(event.target.checked));
+    };
+
+    const handleCheckChange = (index) => (event) => {
+        const newCheckedList = [...checkedList];
+        newCheckedList[index] = event.target.checked;
+        setCheckedList(newCheckedList);
+
+        if (newCheckedList.every((checked) => checked)) {
+            setIsAllChecked(true);
+        } else {
+            setIsAllChecked(false);
+        }
+    };
+
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -67,30 +91,37 @@ export default function OneView() {
                     maxWidth: '90%',
                 }}
             >
-              <Box sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                bgcolor: '#007867',
-                minHeight: '300px',
-                borderRadius: '10px 10px 0 0',
-                position: 'relative',
-              }}>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    bgcolor: '#007867',
+                    minHeight: '300px',
+                    borderRadius: '10px 10px 0 0',
+                    position: 'relative',
+                }}>
 
-                <Stack direction='row' margin='10px'>
-                  <Box sx={{width: '50%', height: 'auto',  display: 'flex', justifyContent: 'end', alignItems: 'center'}}>
-                    <img src={eventData?.image} alt={eventData?.id} style={{maxWidth: '80%', height: 'auto', borderRadius: '10px'}} />
-                  </Box>
+                    <Stack direction='row' margin='10px'>
+                        <Box sx={{width: '50%', display: 'flex', justifyContent: 'end', alignItems: 'center', position: 'relative', marginRight:'20px'}}>
+                            <img src={eventData?.image} alt={eventData?.id} style={{width: '100%', height: '200px', objectFit: 'cover', borderRadius: '10px'}} />
+                        </Box>
 
-                  <Box sx={{width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '20px', margin: 'auto'}}>
-                    <Stack sx={{marginBottom:'20px'}}>
-                      <Typography variant="h6" color="white"> {eventData?.year} - {eventData?.semester} </Typography>
-                      <Typography variant="h2" color="white"> {eventData?.name} </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '20px', marginLeft:'20px'}}>
+
+                            <Stack sx={{marginBottom:'20px'}}>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Switch checked={isOpen} onChange={handleToggle} sx={{ transform: 'scale(1.5)' }} />
+                                    <Typography variant="h5" color="white">{isOpen ? '공개' : '미공개'}</Typography>
+                                </Box>
+                                <Typography variant="h6" color="white"> {eventData?.year} - {eventData?.semester} </Typography>
+                                <Typography variant="h2" color="white" width="300px"> {eventData?.name} </Typography>
+                            </Stack>
+                            <Typography variant="h5" sx={{marginBottom:'10px'}} color="white"> 진행:  {eventData?.professor} </Typography>
+                        </Box>
                     </Stack>
-                    <Typography variant="h5" sx={{marginBottom:'10px'}} color="white"> 진행:  {eventData?.professor} </Typography>
-                  </Box>
-                </Stack>
-              </Box>
+                </Box>
+
 
               <Box sx={{margin: '40px 60px'}}>
                 <Typography variant="h3">
@@ -138,7 +169,7 @@ export default function OneView() {
                   <ListItem>
                     <ListItemText
                       primary={<Typography variant="h4" marginBottom="20px">1. 내용</Typography>}
-                      secondary={<Typography variant="body1">위 학생은 전산전자공학부에서 진행한 &quot;자바 프로그래밍 캠프&quot;에 참가하여 소정의 과정을 이수하였기에 이 증서를 수여합니다.</Typography>} />
+                      secondary={<Typography variant="body1">위 학생은 전산전자공학부에서 진행한 &quot;{eventData?.name}&quot;에 참가하여 소정의 과정을 이수하였기에 이 증서를 수여합니다.</Typography>} />
                   </ListItem>
                   <ListItem>
                     <ListItemText
@@ -166,7 +197,7 @@ export default function OneView() {
                     <TableHead>
                       <TableRow >
                         <TableCell padding="checkbox" style={{backgroundColor: '#007867', color: 'white'}}>
-                          <Checkbox />
+                            <Checkbox checked={isAllChecked} onChange={handleCheckAllChange} style={{color:'white'}}/>
                         </TableCell>
                         <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>이름</TableCell>
                         <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>학번</TableCell>
@@ -176,10 +207,10 @@ export default function OneView() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {eventData?.participantList?.list?.map((participant) => (
+                      {eventData?.participantList?.list?.map((participant,index) => (
                         <TableRow key={participant.id}>
                           <TableCell padding="checkbox">
-                            <Checkbox />
+                              <Checkbox checked={checkedList[index]} onChange={handleCheckChange(index)} />
                           </TableCell>
                           <TableCell component="th" scope="row" align="center">
                             {participant.user.info.name}
@@ -196,7 +227,9 @@ export default function OneView() {
                   </Table>
                 </TableContainer>
                 <Box display="flex" justifyContent="flex-end">
-                  <Button variant="contained" color="primary"> <SimCardDownloadIcon/> 명단 다운로드 </Button>
+                    <Button variant="contained" color="primary" onClick={() => downloadExcel(eventData.id)}>
+                        <SimCardDownloadIcon/> 명단 다운로드
+                    </Button>
                 </Box>
               </Box>
             </Box>

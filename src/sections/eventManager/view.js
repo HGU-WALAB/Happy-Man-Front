@@ -107,7 +107,7 @@ export default function EventManagerView() {
       </Typography>
 
       <Box sx={{ mt: 5 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{margin: '10px 0px ', maxWidth:1300}}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{margin: 'auto', maxWidth:1300, alignItems: 'center'}}>
           <TextField
             type="text"
             placeholder="캠프명으로 검색"
@@ -126,7 +126,7 @@ export default function EventManagerView() {
           </Stack>
         </Stack>
 
-        <TableContainer component={Paper} sx={{ maxHeight: 750 , minWidth: 300, maxWidth: 1300, margin: 'auto'}}>
+        <TableContainer component={Paper} sx={{ maxHeight: 750 , minWidth: 300, maxWidth: 1300, margin: 'auto' ,marginTop:'10px'}}>
           <Table>
             <TableHead>
               <TableRow>

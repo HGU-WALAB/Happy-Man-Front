@@ -31,3 +31,9 @@ export const getSingleEvent = async (id) => {
   const response = await axios.get(`${apiUrl}/${id}`);
   return response.data;
 };
+
+// Update IsOpen
+export const updateIsOpen = async (id, eventForm) => {
+    const response = await axios.patch(`${apiUrl}/updateIsOpen/${id}`, eventForm);
+    return response.data;
+};

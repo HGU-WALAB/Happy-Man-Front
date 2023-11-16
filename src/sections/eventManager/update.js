@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
-import Slide from '@mui/material/Slide';
-import {TextField, Select, MenuItem, FormControl, InputLabel, Grid} from '@mui/material';
-import Box from "@mui/material/Box";
 import {
-    Edit as EditIcon
-} from '@mui/icons-material';
-
+    Button,
+    Dialog,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Typography,
+    Slide,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Grid,
+    Box
+} from '@mui/material';
+import { Close as CloseIcon, Edit as EditIcon } from '@mui/icons-material';
 import { getAllInstitutions } from '../../api/institution';
 import { updateEvent, getSingleEvent } from "../../api/event";
 
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
+
 // eslint-disable-next-line react/prop-types
 export default function FullScreenDialog({eventId}) {
-    const [open, setOpen] = React.useState(false);
-
+    const [open, setOpen] = useState(false);
     const [formState, setFormState] = useState({
         name: '',
         year: new Date().getFullYear().toString(),
@@ -35,77 +38,8 @@ export default function FullScreenDialog({eventId}) {
         content: '',
         stamp: '',
         issuingName: '',
-        isOpen: false,
     });
-
     const [selectedInstitution, setSelectedInstitution] = useState('');
-    // 이벤트 데이터를 불러오는 함수
-
-
-    const fetchEventData = async () => {
-      if (!eventId) {
-        console.error("Invalid eventId:", eventId);
-        return;
-      }
-      try {
-        const { info } = await getSingleEvent(eventId);
-        console.log(info);
-        // 받아온 데이터를 formState에 적용
-        setFormState({
-          name: info.name,
-          year: info.year || '',
-          semester: info.semester|| '',
-          professor: info.professor,
-          image: info.image,
-          applicationDate: info.applicationDate,
-          startDate: info.startDate,
-          endDate: info.endDate,
-          certificateIssueDate: info.certificateIssueDate,
-          content: info.content,
-          stamp: info.stamp,
-          issuingName: info.issuingName,
-          isOpen: info.isOpen,
-        });
-        // setSelectedInstitution(info.institutionId); // 기관 ID는 별도로 관리
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-
-
-
-    const handleClickOpen = async () => {
-        if (!open) {
-            setOpen(true);
-            await fetchEventData();  // 이벤트를 불러옴
-        }
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        const finalValue = event.target.type === 'date' ? new Date(value).toISOString().split('T')[0] : value;
-
-
-
-        setFormState({
-            ...formState,
-            [name]: finalValue
-        });
-    };
-
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i+1);
-
-    const isFormComplete = () => {
-        const requiredFields = ['name', 'professor', 'startDate', 'endDate'];
-        return requiredFields.every((field) => formState[field]);
-    };
-
     const [institutions, setInstitutions] = useState([]);
 
     useEffect(() => {
@@ -115,36 +49,105 @@ export default function FullScreenDialog({eventId}) {
                 setInstitutions(data.list);
             } catch (error) {
                 console.error(error);
-                setInstitutions([]);
             }
         };
-
         fetchData();
     }, []);
 
-    const handleSelectChange = (event) => {
-        setSelectedInstitution(event.target.value);
+    const fetchEventData = async () => {
+        if (!eventId) {
+            console.error("Invalid eventId:", eventId);
+            return;
+        }
+        try {
+            const { info } = await getSingleEvent(eventId);
+
+            // 필요한 프로퍼티만 추출
+            const {
+                name,
+                year,
+                semester,
+                professor,
+                image,
+                startDate,
+                endDate,
+                certificateIssueDate,
+                content,
+                stamp,
+                issuingName,
+            } = info;
+
+            // institution 프로퍼티 처리
+            const institutionName = info.institution?.info?.name;
+
+            setFormState({
+                name,
+                year,
+                semester,
+                professor,
+                image,
+                startDate,
+                endDate,
+                certificateIssueDate,
+                content,
+                stamp,
+                issuingName,
+            });
+            setSelectedInstitution(institutionName);
+        } catch (error) {
+            console.error(error);
+        }
     };
+
+
+    const handleClickOpen = async () => {
+        if (!open) {
+            setOpen(true);
+            await fetchEventData();
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleInputChange = (event) => {
+        const { name, type } = event.target;
+        let value;
+
+        if (type === 'date') {
+            value = new Date(event.target.value).toISOString().split('T')[0];
+        } else {
+            // eslint-disable-next-line prefer-destructuring
+            value = event.target.value;
+        }
+
+        setFormState(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const isFormComplete = () => ['name', 'professor', 'startDate', 'endDate'].every((field) => formState[field]);
+
+    const handleSelectChange = event => setSelectedInstitution(event.target.value);
+
+    const getInstitutionIdByName = name => institutions.find((institution) => institution.name === name)?.id || '';
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const matchingInstitution = institutions.find((institution) => institution.name === selectedInstitution);
-
-        if (!matchingInstitution) {
-            console.error('No matching institution found');
-            return;
-        }
-
         try {
             const updatedEvent = {
                 ...formState,
-                institutionId: matchingInstitution.id
+                institutionId: getInstitutionIdByName(selectedInstitution)
             };
+
+            console.log('Sending data to server:', updatedEvent);  // Add logging here
 
             await updateEvent(eventId, updatedEvent);
 
-            setFormState({
+            setFormState(prevState => ({
                 name: '',
                 year: new Date().getFullYear().toString(),
                 semester: 'SPRING',
@@ -157,17 +160,18 @@ export default function FullScreenDialog({eventId}) {
                 content: '',
                 stamp: '',
                 issuingName: '',
-                isOpen: false,
-            });
+            }));
 
             setSelectedInstitution('');
             handleClose();
-            window.location.reload();
-
+            // window.location.reload();
         } catch (error) {
             console.error(error);
         }
     };
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({length: currentYear - 2018}, (_, i) => currentYear - i+1);
 
 
     return (
@@ -209,26 +213,28 @@ export default function FullScreenDialog({eventId}) {
                         <form onSubmit={handleSubmit}>
                             <Box sx={{margin:'20px'}}>
                                 <Grid container direction="column" spacing={2}>
+                                  <Grid item container justifyContent="space-between" alignItems="center">
                                     <Grid item>
-                                        <FormControl sx={{ margin:'5px' }}>
-                                            <InputLabel>년도</InputLabel>
-                                            <Select name="year" value={formState.year} onChange={handleInputChange}>
-                                                {years.map((year) => (
-                                                    <MenuItem key={year} value={year}>{year}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
+                                      <FormControl sx={{ margin:'5px' }}>
+                                        <InputLabel>년도</InputLabel>
+                                        <Select name="year" value={formState.year} onChange={handleInputChange}>
+                                          {years.map((year) => (
+                                            <MenuItem key={year} value={year}>{year}</MenuItem>
+                                          ))}
+                                        </Select>
+                                      </FormControl>
 
-                                        <FormControl sx={{ margin:'5px' }}>
-                                            <InputLabel sx={{ color: '#00A76F' }}>학기</InputLabel>
-                                            <Select name="semester" value={formState.semester} onChange={handleInputChange}>
-                                                {['SPRING', 'SUMMER', 'FALL', 'WINTER'].map((semester) => (
-                                                    <MenuItem key={semester} value={semester}>{semester}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
+                                      <FormControl sx={{ margin:'5px' }}>
+                                        <InputLabel sx={{ color: '#00A76F' }}>학기</InputLabel>
+                                        <Select name="semester" value={formState.semester} onChange={handleInputChange}>
+                                          {['SPRING', 'SUMMER', 'FALL', 'WINTER'].map((semester) => (
+                                            <MenuItem key={semester} value={semester}>{semester}</MenuItem>
+                                          ))}
+                                        </Select>
+                                      </FormControl>
                                     </Grid>
-                                    <Grid item>
+                                  </Grid>
+                                  <Grid item>
                                         <TextField sx={{ width: '100%' }} label="이벤트 이름" value={formState.name} name="name" onChange={handleInputChange} />
                                     </Grid>
                                     <Grid item container>
@@ -242,8 +248,6 @@ export default function FullScreenDialog({eventId}) {
                                                 ))}
                                             </Select>
                                         </FormControl>
-
-
                                         <TextField sx={{ flex: 1 }} label="교수님" value={formState.professor} name="professor" onChange={handleInputChange} />
                                     </Grid>
 
