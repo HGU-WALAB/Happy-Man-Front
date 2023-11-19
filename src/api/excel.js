@@ -16,7 +16,7 @@ export const downloadExcel = async (id) => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
 
     // 파일 이름을 이벤트의 이름과 학기 정보를 이용하여 설정합니다.
-    const fileName = `${eventData.info.name}_${eventData.info.year}_${eventData.info.semester}.xlsx`;
+    const fileName = `${eventData.info.year}_${eventData.info.semester}_${eventData.info.name}.xlsx`;
 
     // 가상의 링크를 생성하고 클릭하여 파일을 다운로드
     const link = document.createElement('a');

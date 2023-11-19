@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {Link} from "react-router-dom";
 // components
 import {
   Box,
@@ -19,7 +20,6 @@ import {
   Stack,
   Divider, Chip
 } from '@mui/material';
-
 import {
   ContentCopy as ContentCopyIcon,
   ManageAccounts as ManageAccountsIcon,
@@ -148,7 +148,9 @@ export default function EventManagerView() {
                   <TableRow key={user.id}>
                     <TableCell align="center">{user.year}</TableCell>
                     <TableCell align="center">{user.semester}</TableCell>
-                    <TableCell component="th" scope="row" align="center">{user.name}</TableCell>
+                    <TableCell component="th" scope="row" align="center">
+                      <Link to={`/dashboard/details/${user.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>{user.name}</Link>
+                    </TableCell>
                     <TableCell align="center">{user.professor}</TableCell>
                     <TableCell align="center">{user.institution.info.name}</TableCell>
                     <TableCell align="center">

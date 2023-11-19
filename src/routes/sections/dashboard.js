@@ -11,11 +11,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 const IndexPage = lazy(() => import('src/pages/dashboard/home'));
 const PageTwo = lazy(() => import('src/pages/dashboard/event'));
-const PageThree = lazy(() => import('src/pages/dashboard/three'));
-const PageFour = lazy(() => import('src/pages/dashboard/four'));
-const PageFive = lazy(() => import('src/pages/dashboard/five'));
-const PageSix = lazy(() => import('src/pages/dashboard/six'));
-const PageEM = lazy(() => import('src/pages/dashboard/manager'));
+const PageEventManager = lazy(() => import('src/pages/dashboard/manager'));
+const PageManagerDetail = lazy(() => import('src/pages/dashboard/details'));
 
 // ----------------------------------------------------------------------
 
@@ -34,16 +31,8 @@ export const dashboardRoutes = [
     children: [
       { element: <IndexPage />, index: true },
       { path: 'event', element: <PageTwo /> },
-      { path: 'three', element: <PageThree /> },
-      { path: 'manager', element: <PageEM /> },
-      {
-        path: 'group',
-        children: [
-          { element: <PageFour />, index: true },
-          { path: 'five', element: <PageFive /> },
-          { path: 'six', element: <PageSix /> },
-        ],
-      },
+      { path: 'manager', element: <PageEventManager /> },
+      { path: 'details/:eventId', element: <PageManagerDetail /> },
     ],
   },
 ];

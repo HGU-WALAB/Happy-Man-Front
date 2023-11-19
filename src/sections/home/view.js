@@ -136,27 +136,10 @@ export default function OneView() {
                     <ListItem>
                       <ListItemText primary={<Typography variant="h4" marginBottom="20px">2. 기타 안내사항</Typography>} secondary={<Typography variant="body1" dangerouslySetInnerHTML={{ __html: eventData?.content.replace(/\n/g, '<br/>')}} />} />
                     </ListItem>
+                    <ListItem>
+                        <ListItemText primary={<Typography variant="h4" marginBottom="20px">3. 관리 및 문의</Typography>} secondary={<Typography variant="body1">{`${eventData?.institution?.info?.name} (054-260-1234)`}</Typography>} />
+                    </ListItem>
                   </List>
-                  <TableContainer component={Paper} sx={{margin: '20px 0px', width:'35%'}}>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell align="center" style={{backgroundColor: '#007867', color: 'white'}}>
-                            <Typography variant="h4">관리 및 문의</Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell align="center">
-                            <Typography variant="h6">{eventData?.institution?.info?.name}</Typography>
-                            <br />
-                            <Typography variant="h6">054-260-1234</Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
                 </Stack>
               </Box>
 

@@ -23,10 +23,6 @@ export const paths = {
     event: `${ROOTS.DASHBOARD}/event`,
     three: `${ROOTS.DASHBOARD}/three`,
     manager: `${ROOTS.DASHBOARD}/manager`,
-    group: {
-      root: `${ROOTS.DASHBOARD}/group`,
-      five: `${ROOTS.DASHBOARD}/group/five`,
-      six: `${ROOTS.DASHBOARD}/group/six`,
-    },
+    details: `${ROOTS.DASHBOARD}/details`,
   },
 };
