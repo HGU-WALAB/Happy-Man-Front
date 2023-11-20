@@ -22,9 +22,9 @@ import Logo from 'src/components/logo';
 
 const METHODS = [
   {
-    id: 'jwt',
-    label: 'Jwt',
-    path: paths.auth.jwt.login,
+    id: 'happyman',
+    label: 'Happyman',
+    path: paths.auth.happyman.login,
     icon: '/assets/icons/auth/ic_jwt.svg',
   },
 ];

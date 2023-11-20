@@ -1,18 +1,8 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
-// utils
-import axios, { endpoints } from 'src/utils/axios';
-//
+import axios from 'src/utils/axios';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
-
-// ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
-// ----------------------------------------------------------------------
 
 const initialState = {
   user: null,
@@ -47,8 +37,6 @@ const reducer = (state, action) => {
   return state;
 };
 
-// ----------------------------------------------------------------------
-
 const STORAGE_KEY = 'accessToken';
 
 export function AuthProvider({ children }) {
@@ -61,7 +49,8 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const response = await axios.get(endpoints.auth.me);
+        // You may need to update the following line depending on your backend's API
+        const response = await axios.get('/api/happyman/auth/me');
 
         const { user } = response.data;
 
@@ -97,16 +86,9 @@ export function AuthProvider({ children }) {
     initialize();
   }, [initialize]);
 
-  // LOGIN
-  const login = useCallback(async (email, password) => {
-    const data = {
-      email,
-      password,
-    };
-
-    const response = await axios.post(endpoints.auth.login, data);
-
-    const { accessToken, user } = response.data;
+  const login = useCallback(async (uniqueId, password) => {
+    const response = await axios.post('/api/happyman/auth/login', { uniqueId, password });
+    const { accessToken } = response.data;
 
     setSession(accessToken);
 
@@ -114,25 +96,16 @@ export function AuthProvider({ children }) {
       type: 'LOGIN',
       payload: {
         user: {
-          ...user,
+          uniqueId,
           accessToken,
         },
       },
     });
   }, []);
 
-  // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
-    const data = {
-      email,
-      password,
-      firstName,
-      lastName,
-    };
-
-    const response = await axios.post(endpoints.auth.register, data);
-
-    const { accessToken, user } = response.data;
+  const register = useCallback(async (uniqueId, password) => {
+    const response = await axios.post('/api/happyman/auth/join', { uniqueId, password });
+    const { accessToken } = response.data;
 
     sessionStorage.setItem(STORAGE_KEY, accessToken);
 
@@ -140,22 +113,19 @@ export function AuthProvider({ children }) {
       type: 'REGISTER',
       payload: {
         user: {
-          ...user,
+          uniqueId,
           accessToken,
         },
       },
     });
   }, []);
 
-  // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
     dispatch({
       type: 'LOGOUT',
     });
   }, []);
-
-  // ----------------------------------------------------------------------
 
   const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
 
@@ -168,7 +138,6 @@ export function AuthProvider({ children }) {
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
-      //
       login,
       register,
       logout,

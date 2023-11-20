@@ -40,13 +40,13 @@ export default function JwtLoginView() {
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    uniqueId: Yup.string().required('학번을 입력하세요.').length(8, '학번은 8자리여야 합니다.'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    uniqueId: '21900613',
+    password: '12345',
   };
 
   const methods = useForm({
@@ -62,8 +62,7 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await login?.(data.email, data.password);
-
+      await login?.(data.uniqueId, data.password);
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       console.error(error);
@@ -79,7 +78,7 @@ export default function JwtLoginView() {
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
 
-        <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
+        <Link component={RouterLink} href={paths.auth.happyman.register} variant="subtitle2">
           Create an account
         </Link>
       </Stack>
@@ -90,7 +89,7 @@ export default function JwtLoginView() {
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField name="uniqueId" label="Unique ID" />
 
       <RHFTextField
         name="password"
@@ -129,7 +128,7 @@ export default function JwtLoginView() {
       {renderHead}
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
+        Use email : <strong>21900613</strong> / password :<strong> 12345</strong>
       </Alert>
 
       {renderForm}

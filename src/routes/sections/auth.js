@@ -10,13 +10,13 @@ import { SplashScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 
 // JWT
-const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
-const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
+const JwtLoginPage = lazy(() => import('src/pages/auth/happyman/login'));
+const JwtRegisterPage = lazy(() => import('src/pages/auth/happyman/register'));
 
 // ----------------------------------------------------------------------
 
-const authJwt = {
-  path: 'jwt',
+const authHappyman = {
+  path: 'happyman',
   element: (
     <GuestGuard>
       <Suspense fallback={<SplashScreen />}>
@@ -47,6 +47,6 @@ const authJwt = {
 export const authRoutes = [
   {
     path: 'auth',
-    children: [authJwt],
+    children: [authHappyman],
   },
 ];
