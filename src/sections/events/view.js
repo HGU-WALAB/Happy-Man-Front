@@ -130,51 +130,6 @@ export default function TwoView() {
               </CardActions>
             </Card>
           ))}
-          {currentEventsData.map((event) => (
-            <Card key={event.id} sx={{ width: "23%", margin: "1%" }} >
-              <Settingbt id={event.id}/>
-              <CardActionArea onClick={() => handleCardClick(event.id)}>
-                <CardMedia component="img" height="140" image={event.image} alt={event.name} />
-                <CardContent>
-                  <Stack direction="row" alignItems="center" >
-                    <Typography gutterBottom variant="body2" color="primary" component="div">
-                      {event.year} - {event.semester}
-                    </Typography>
-                    <Badge
-                      color="success"
-                      badgeContent={new Date() <= new Date(event.applicationDate) ?
-                        <Typography variant="body2">신청 가능</Typography>
-                        : null}
-                      sx={{ zIndex: 1, position: 'absolute',top: '58.5%', right:'45%',width:'80px' }}
-                    />
-                  </Stack>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {event.name}
-                  </Typography>
-
-                  <Typography variant="body2" color="text.secondary">
-                    담당자 : {event.manager} {event.institution && event.institution.info ? `(${event.institution.info.name})` : ''}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    기간 : {new Date(event.startDate).toLocaleDateString()} ~
-                    {new Date(event.endDate).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              <EventDetailModal
-                open={modalOpen}
-                onClose={handleCloseModal}
-                eventId={selectedEventId}
-              />
-              <CardActions>
-                <Box display="flex" justifyContent="flex-end" width="100%" margin-right="1">
-                  <Button size="small" color="primary" disabled={new Date() > new Date(event.applicationDate)}>
-                    신청하기
-                  </Button>
-                </Box>
-              </CardActions>
-            </Card>
-          ))}
         </div>
 
         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>

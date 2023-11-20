@@ -28,6 +28,8 @@ import { useSettingsContext } from 'src/components/settings';
 import { getSingleEvent,updateIsOpen } from '../../api/event';
 import { fetchCertificate } from '../../api/certificate';
 import {downloadExcel} from "../../api/excel";
+import DeleteParticipantModal from './excel/delete';
+import UploadExcel from './excel/excelupload';
 
 export default function SingleEventView() {
     const [eventData, setEventData] = useState(null);
@@ -36,6 +38,8 @@ export default function SingleEventView() {
     const [checkedList, setCheckedList] = useState([]);
     const [isAllChecked, setIsAllChecked] = useState(false);
     const {eventId} = useParams();
+    const [checkedIds, setCheckedIds] = useState([]);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -68,10 +72,21 @@ export default function SingleEventView() {
         setCheckedList(new Array(eventData.participantList.list.length).fill(event.target.checked));
     };
 
-    const handleCheckChange = (index) => (event) => {
+    const handleCheckChange = (index, id) => (event) => {
         const newCheckedList = [...checkedList];
         newCheckedList[index] = event.target.checked;
         setCheckedList(newCheckedList);
+
+        const newCheckedIds = [...checkedIds];
+        if (event.target.checked) {
+            newCheckedIds.push(id);
+        } else {
+            const idIndex = newCheckedIds.indexOf(id);
+            if (idIndex > -1) {
+                newCheckedIds.splice(idIndex, 1);
+            }
+        }
+        setCheckedIds(newCheckedIds);
 
         if (newCheckedList.every((checked) => checked)) {
             setIsAllChecked(true);
@@ -80,6 +95,15 @@ export default function SingleEventView() {
         }
     };
 
+    const handleCloseDeleteModal = () => {
+        setDeleteModalOpen(false); // 삭제 모달을 닫는 함수를 추가해주세요.
+    };
+
+    const handleDeleteClick = () => {
+        if (checkedIds.length > 0) {
+            setDeleteModalOpen(true);
+        }
+    };
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -173,8 +197,8 @@ export default function SingleEventView() {
                             <Typography variant="h6" display="inline">(수료증 발급일 : {eventData?.certificateIssueDate})</Typography>
                         </Box>
                         <Box>
-                            <Button variant="outlined" color="primary" sx={{marginRight: '5px'}}> 수료생 등록</Button>
-                            <Button variant="outlined" color="error"> 수료생 삭제</Button>
+                            <UploadExcel id={eventData.id}/>
+                            <DeleteParticipantModal open={deleteModalOpen} onClose={handleCloseDeleteModal} ids={checkedIds} />
                         </Box>
                     </Box>
                     <TableContainer component={Paper} sx={{width:'98%', margin:'10px'}}>
@@ -195,7 +219,7 @@ export default function SingleEventView() {
                                 {eventData?.participantList?.list?.map((participant,index) => (
                                     <TableRow key={participant.id}>
                                         <TableCell padding="checkbox">
-                                            <Checkbox checked={checkedList[index]} onChange={handleCheckChange(index)} />
+                                            <Checkbox checked={checkedList[index]} onChange={handleCheckChange(index,participant.id)} />
                                         </TableCell>
                                         <TableCell component="th" scope="row" align="center">
                                             {participant.user.info.name}
