@@ -55,7 +55,7 @@ export default function EventManagerView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAllEvents();
+        const {data} = await getAllEvents();
         setOriginalUsers(data.list); // 원본 사용자 목록 저장
         setUsers(data.list);
         setEventsData(data.list); // 이벤트 데이터 상태도 업데이트
@@ -71,7 +71,7 @@ export default function EventManagerView() {
   }, []);
 
   useEffect(() => {
-    const filteredUsers = originalUsers.filter(user =>
+    const filteredUsers = originalUsers?.filter(user =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setUsers(filteredUsers);
@@ -144,7 +144,7 @@ export default function EventManagerView() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+              {users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
                   <TableRow key={user.id}>
                     <TableCell align="center">{user.year}</TableCell>
                     <TableCell align="center">{user.semester}</TableCell>
@@ -174,7 +174,7 @@ export default function EventManagerView() {
         <TablePagination
           rowsPerPageOptions={[10, 20, 50]}
           component="div"
-          count={users.length}
+          count={users?.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

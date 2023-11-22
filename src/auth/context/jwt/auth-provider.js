@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
-import axios from 'src/utils/axios';
+import axiosInstance from "../../../utils/axios";
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
 
@@ -49,8 +49,7 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        // You may need to update the following line depending on your backend's API
-        const response = await axios.get('/api/happyman/auth/me');
+        const response = await axiosInstance.get('/api/happyman/auth/me');
 
         const { user } = response.data;
 
@@ -87,16 +86,18 @@ export function AuthProvider({ children }) {
   }, [initialize]);
 
   const login = useCallback(async (uniqueId, password) => {
-    const response = await axios.post('/api/happyman/auth/login', { uniqueId, password });
-    const { accessToken } = response.data;
-
+    const response = await axiosInstance.post('/api/happyman/auth/login', { uniqueId, password });
+    console.log(response);
+    const accessToken = response.data.token;
+    const { token,user } = response.data;
+    localStorage.setItem('accessToken', token);
     setSession(accessToken);
 
     dispatch({
       type: 'LOGIN',
       payload: {
         user: {
-          uniqueId,
+          ...user,
           accessToken,
         },
       },
@@ -104,7 +105,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (uniqueId, password) => {
-    const response = await axios.post('/api/happyman/auth/join', { uniqueId, password });
+    const response = await axiosInstance.post('/api/happyman/auth/join', { uniqueId, password });
     const { accessToken } = response.data;
 
     sessionStorage.setItem(STORAGE_KEY, accessToken);

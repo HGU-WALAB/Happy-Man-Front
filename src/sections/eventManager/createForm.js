@@ -190,7 +190,7 @@ export default function FullScreenDialog() {
                     <FormControl sx={{ flex: 1, marginRight:'5px'}}>
                       <InputLabel>담당 기관</InputLabel>
                       <Select value={selectedInstitution} onChange={handleSelectChange}>
-                        {institutions.map((institution) => (
+                        {(institutions || []).map((institution) => (
                           <MenuItem key={institution.id} value={institution.name}>
                             {institution.name}
                           </MenuItem>

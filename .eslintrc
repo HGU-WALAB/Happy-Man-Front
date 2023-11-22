@@ -46,6 +46,7 @@
     }
   },
   "rules": {
+    "dot-notation": "off",
     "no-alert": 0,
     "camelcase": 0,
     "no-console": 0,
