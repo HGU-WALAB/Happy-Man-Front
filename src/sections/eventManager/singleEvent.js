@@ -48,7 +48,8 @@ export default function SingleEventView() {
                 const data = await getSingleEvent(eventId);  // Replace 'id' with actual event id
                 setEventData(data.info);
                 setIsOpen(data.info.isOpen);
-                setCheckedList(new Array(data.info.participantList.list.length).fill(false));
+                setCheckedList(data.info.participantList.list.map(() => false));
+                console.log(data);
             } catch (error) {
                 console.error('Failed to fetch event data:', error);
             }
@@ -67,43 +68,44 @@ export default function SingleEventView() {
         await updateIsOpen(eventData.id, { isOpen: newIsOpen });
     };
 
-    const handleCheckAllChange = (event) => {
-        setIsAllChecked(event.target.checked);
-        setCheckedList(new Array(eventData.participantList.list.length).fill(event.target.checked));
-    };
+  const handleCheckAllChange = (event) => {
+    setIsAllChecked(event.target.checked);
+    setCheckedList(new Array(eventData.participantList.list.length).fill(event.target.checked));
 
-    const handleCheckChange = (index, id) => (event) => {
-        const newCheckedList = [...checkedList];
-        newCheckedList[index] = event.target.checked;
-        setCheckedList(newCheckedList);
+    if (event.target.checked) {
+      setCheckedIds(eventData.participantList.list.map((participant) => participant.id));
+    } else {
+      setCheckedIds([]);
+    }
+  };
 
-        const newCheckedIds = [...checkedIds];
-        if (event.target.checked) {
-            newCheckedIds.push(id);
-        } else {
-            const idIndex = newCheckedIds.indexOf(id);
-            if (idIndex > -1) {
-                newCheckedIds.splice(idIndex, 1);
-            }
-        }
-        setCheckedIds(newCheckedIds);
 
-        if (newCheckedList.every((checked) => checked)) {
-            setIsAllChecked(true);
-        } else {
-            setIsAllChecked(false);
-        }
-    };
+  const handleCheckChange = (index, id) => (event) => {
+    const newCheckedList = [...checkedList];
+    newCheckedList[index] = event.target.checked;
+    setCheckedList(newCheckedList);
 
-    const handleCloseDeleteModal = () => {
+    if (event.target.checked) {
+      setCheckedIds((prevCheckedIds) => [...prevCheckedIds, id]);
+    } else {
+      setCheckedIds((prevCheckedIds) => prevCheckedIds.filter((checkId) => checkId !== id));
+    }
+
+    if (newCheckedList.every((checked) => checked)) {
+      setIsAllChecked(true);
+    } else {
+      setIsAllChecked(false);
+    }
+  };
+
+
+
+  const handleCloseDeleteModal = () => {
         setDeleteModalOpen(false); // 삭제 모달을 닫는 함수를 추가해주세요.
     };
 
-    const handleDeleteClick = () => {
-        if (checkedIds.length > 0) {
-            setDeleteModalOpen(true);
-        }
-    };
+
+    if(!eventData) return (<div>loading...</div>);
 
     return (
         <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -183,7 +185,7 @@ export default function SingleEventView() {
                         <ListItem>
                             <ListItemText
                                 primary={<Typography variant="h4" marginBottom="20px">2. 학부장</Typography>}
-                                secondary={<Typography variant="body1"> 한동대학교 전산전자공학부 황성수</Typography>} />
+                                secondary={<Typography variant="body1"> {eventData?.issuingName}</Typography>} />
                         </ListItem>
                     </List>
                 </Box>
@@ -196,7 +198,7 @@ export default function SingleEventView() {
                             </Typography>
                             <Typography variant="h6" display="inline">(수료증 발급일 : {eventData?.certificateIssueDate})</Typography>
                         </Box>
-                        <Box>
+                        <Box display="flex" gap={1}>
                             <UploadExcel id={eventData.id}/>
                             <DeleteParticipantModal open={deleteModalOpen} onClose={handleCloseDeleteModal} ids={checkedIds} />
                         </Box>
@@ -224,9 +226,9 @@ export default function SingleEventView() {
                                         <TableCell component="th" scope="row" align="center">
                                             {participant.user.info.name}
                                         </TableCell>
-                                        <TableCell align="center">{participant.user.info.studentId}</TableCell>
+                                        <TableCell align="center">{participant.user.info.uniqueId}</TableCell>
                                         <TableCell align="center">{participant.user.info.department}</TableCell>
-                                        <TableCell align="center">제 2023-1호</TableCell>
+                                        <TableCell align="center">{participant.serialNumber}</TableCell>
                                         <TableCell align="center">
                                             <Button onClick={() => handleButtonClick(participant.id)}>수료증 미리보기 <DownloadForOfflineOutlinedIcon/></Button>
                                         </TableCell>

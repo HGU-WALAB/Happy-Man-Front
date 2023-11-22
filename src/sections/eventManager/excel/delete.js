@@ -23,6 +23,7 @@ const DeleteModal = ({ ids }) => {
 
                 })
                 .catch((error) => {
+                  console.log(ids);
                     console.error('수료생 삭제 실패:', error);
                 });
         }
@@ -38,10 +39,10 @@ const DeleteModal = ({ ids }) => {
                 onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>이벤트 삭제</DialogTitle>
+                <DialogTitle>수료자 삭제</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                        삭제 시 복구가 불가능하며 관련된 모든 정보(수료자, 참가자 등)가 삭제됩니다.
+                        삭제 시 복구가 불가능하며 관련된 모든 정보(이름, 수료증 등)가 삭제됩니다.
                     </DialogContentText>
                     <DialogContentText id="alert-dialog-slide-description">
                         정말 삭제하시겠습니까?

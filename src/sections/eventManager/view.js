@@ -6,7 +6,6 @@ import {
   Container,
   Typography,
   TextField,
-  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -21,7 +20,6 @@ import {
   Divider, Chip
 } from '@mui/material';
 import {
-  ContentCopy as ContentCopyIcon,
   ManageAccounts as ManageAccountsIcon,
 } from '@mui/icons-material';
 
@@ -31,6 +29,7 @@ import CustomPopover, {usePopover} from "../../components/custom-popover";
 import CreateForm from "./createForm";
 import EventDeleteModal from './delete-modal';
 import UpdateForm from "./update";
+import CopyDialog from "./copy";
 import {getAllEvents} from "../../api/event";
 
 
@@ -193,14 +192,7 @@ export default function EventManagerView() {
     arrow="right-top"
     sx={{ width: 120 }}
   >
-    <MenuItem
-      onClick={() => {
-        popover.onClose();
-      }}
-    >
-      <ContentCopyIcon/>
-      복제하기
-    </MenuItem>
+    <CopyDialog eventId={selectedUserKey} />
 
     <Divider sx={{ borderStyle: 'dashed' }} />
 

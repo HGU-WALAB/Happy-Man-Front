@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
@@ -108,7 +108,7 @@ export function AuthProvider({ children }) {
     const response = await axiosInstance.post('/api/happyman/auth/join', { uniqueId, password });
     const { accessToken } = response.data;
 
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
+    localStorage.setItem(STORAGE_KEY, accessToken);
 
     dispatch({
       type: 'REGISTER',
@@ -123,6 +123,8 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     setSession(null);
+    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('accessToken');
     dispatch({
       type: 'LOGOUT',
     });

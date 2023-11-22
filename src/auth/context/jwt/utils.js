@@ -51,6 +51,7 @@ export const tokenExpired = (exp) => {
     alert('Token expired');
 
     sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('accessToken');
 
     window.location.href = paths.auth.happyman.login;
   }, timeLeft);
@@ -60,7 +61,7 @@ export const tokenExpired = (exp) => {
 
 export const setSession = (accessToken) => {
   if (accessToken) {
-    sessionStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('accessToken', accessToken);
 
     axios.defaults.headers.common.Authorization = accessToken;  // "Bearer " 삭제
 
@@ -68,7 +69,7 @@ export const setSession = (accessToken) => {
     const { exp } = jwtDecode(accessToken);
     tokenExpired(exp / 1000);  // 초 단위로 변경
   } else {
-    sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('accessToken');
 
     delete axios.defaults.headers.common.Authorization;
   }
