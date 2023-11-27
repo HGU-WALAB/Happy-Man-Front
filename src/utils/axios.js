@@ -20,8 +20,26 @@ axiosInstance.interceptors.request.use(
 );
 axiosInstance.interceptors.response.use(
   (res) => res,
-  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
-);
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response.status === 500 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const { data: { token } } = await axiosInstance.post('/auth/refresh_token');
+
+        localStorage.setItem('accessToken', token);
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return axiosInstance(originalRequest);
+      } catch (_error) {
+        return Promise.reject(_error);
+      }
+    }
+
+    return Promise.reject((error.response && error.response.data) || 'Something went wrong');
+  }
+  );
 
 export default axiosInstance;
 
