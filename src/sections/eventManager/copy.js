@@ -67,16 +67,16 @@ export default function CopyDialog({eventId}) {
 
       // 필요한 프로퍼티만 추출
       const {
-        name,
-        professor,
-        image,
-        content,
-        stamp,
-        issuingName,
+        name = '',
+        professor = '',
+        image = '',
+        content = '',
+        stamp = '',
+        issuingName = ''
       } = info;
 
       // institution 프로퍼티 처리
-      const institutionName = info.institution?.info?.name;
+      const institutionName = info.institution?.info?.name || '';
 
       setFormState({
         name,
@@ -85,6 +85,12 @@ export default function CopyDialog({eventId}) {
         content,
         stamp,
         issuingName,
+        year: '',
+        semester: '',
+        startDate: '',
+        endDate: '',
+        applicationDate: '',
+        certificateIssueDate: ''
       });
       setSelectedInstitution(institutionName);
     } catch (error) {
@@ -138,7 +144,7 @@ export default function CopyDialog({eventId}) {
 
       console.log('Sending data to server:', updatedEvent);  // Add logging here
 
-      await createEvent(eventId, updatedEvent);
+      await createEvent(updatedEvent);
 
       setFormState(prevState => ({
         name: '',
