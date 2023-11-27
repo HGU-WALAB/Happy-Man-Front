@@ -30,7 +30,7 @@ import CreateForm from "./createForm";
 import EventDeleteModal from './delete-modal';
 import UpdateForm from "./update";
 import CopyDialog from "./copy";
-import {getAllEvents} from "../../api/event";
+import {getAllEvents, getSingleEvent} from "../../api/event";
 
 
 
@@ -55,10 +55,12 @@ export default function EventManagerView() {
     const fetchData = async () => {
       try {
         const {data} = await getAllEvents();
+        const someData = await getSingleEvent(1);
         setOriginalUsers(data.list); // 원본 사용자 목록 저장
         setUsers(data.list);
         setEventsData(data.list); // 이벤트 데이터 상태도 업데이트
         console.log(data);
+        console.log(someData);
 
       } catch (error) {
         console.error(error);

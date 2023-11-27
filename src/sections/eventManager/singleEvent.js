@@ -45,7 +45,7 @@ export default function SingleEventView() {
     useEffect(() => {
         const fetchEventData = async () => {
             try {
-                const data = await getSingleEvent(eventId);  // Replace 'id' with actual event id
+                const data = await getSingleEvent(eventId);
                 setEventData(data.info);
                 setIsOpen(data.info.isOpen);
                 setCheckedList(data.info.participantList.list.map(() => false));
@@ -161,11 +161,11 @@ export default function SingleEventView() {
                             <ListItem>
                                 <ListItemText primary={<Typography variant="h4" marginBottom="20px">1. 기간</Typography>} secondary={<Typography variant="body1">{`${eventData?.startDate  } - ${  eventData?.endDate}`}</Typography>} />
                             </ListItem>
+                          <ListItem>
+                            <ListItemText primary={<Typography variant="h4" marginBottom="20px">2. 기타 안내사항</Typography>} secondary={<Typography variant="body1" dangerouslySetInnerHTML={{ __html: eventData?.content ? eventData?.content.replace(/\n/g, '<br/>') : ''}} />} />
+                          </ListItem>
                             <ListItem>
-                                <ListItemText primary={<Typography variant="h4" marginBottom="20px">2. 기타 안내사항</Typography>} secondary={<Typography variant="body1" dangerouslySetInnerHTML={{ __html: eventData?.content.replace(/\n/g, '<br/>')}} />} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary={<Typography variant="h4" marginBottom="20px">3. 관리 및 문의</Typography>} secondary={<Typography variant="body1">{`${eventData?.institution?.info?.name} (054-260-1234)`}</Typography>} />
+                                <ListItemText primary={<Typography variant="h4" marginBottom="20px">3. 관리 및 문의</Typography>} secondary={<Typography variant="body1">{eventData?.institution?.info?.name || '정보 없음'} (054-260-1234)</Typography>} />
                             </ListItem>
                         </List>
                     </Stack>
@@ -224,10 +224,10 @@ export default function SingleEventView() {
                                             <Checkbox checked={checkedList[index]} onChange={handleCheckChange(index,participant.id)} />
                                         </TableCell>
                                         <TableCell component="th" scope="row" align="center">
-                                            {participant.user.info.name}
+                                            {participant.name}
                                         </TableCell>
-                                        <TableCell align="center">{participant.user.info.uniqueId}</TableCell>
-                                        <TableCell align="center">{participant.user.info.department}</TableCell>
+                                        <TableCell align="center">{participant.uniqueId}</TableCell>
+                                        <TableCell align="center">{participant.department}</TableCell>
                                         <TableCell align="center">{participant.serialNumber}</TableCell>
                                         <TableCell align="center">
                                             <Button onClick={() => handleButtonClick(participant.id)}>수료증 미리보기 <DownloadForOfflineOutlinedIcon/></Button>

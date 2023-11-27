@@ -52,12 +52,13 @@ export function AuthProvider({ children }) {
         const response = await axiosInstance.get('/api/happyman/auth/me');
 
         const { user } = response.data;
+        console.log(user);
 
         dispatch({
           type: 'INITIAL',
           payload: {
             user: {
-              ...user,
+              // ...user,
               accessToken,
             },
           },
